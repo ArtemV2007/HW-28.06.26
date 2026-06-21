@@ -8,7 +8,7 @@
     <!-- Выводим только важные логи Hibernate (ошибки и предупреждения) -->
     <logger name="org.hibernate" level="WARN"/>
 
-    <!-- Корневой уровень логирования для нашего приложения -->
+    <!-- Корневой уровень логирования -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
