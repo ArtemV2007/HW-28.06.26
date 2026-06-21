@@ -7,7 +7,8 @@
         <!-- 1. Настройки подключения к PostgreSQL -->
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/user_service_db</property>
-        <property name="postgresql.connection.username">postgres</property>
+        <!-- ИСПРАВЛЕНО: изменен префикс свойства на hibernate -->
+        <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">root</property>
 
         <!-- 2. Настройки SQL-диалекта -->

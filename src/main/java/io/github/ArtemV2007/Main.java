@@ -1,23 +1,16 @@
-package io.github.ArtemV2007;
-
 import io.github.ArtemV2007.dao.UserDao;
+import io.github.ArtemV2007.dao.UserDaoImpl;
 import io.github.ArtemV2007.model.User;
 import io.github.ArtemV2007.service.UserService;
+import io.github.ArtemV2007.util.HibernateUtil;
 
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // Временная заглушка вместо реальной БД, чтобы код компилировался
-        UserDao mockDao = new UserDao() {
-            @Override public void save(User u) { System.out.println("Сохранено в заглушку: " + u); }
-            @Override public User findById(Long id) { return null; }
-            @Override public java.util.List<User> findAll() { return java.util.Collections.emptyList(); }
-            @Override public void update(User u) { System.out.println("Обновлено в заглушке: " + u); }
-            @Override public void delete(Long id) { System.out.println("Удалено из заглушки, ID: " + id); }
-        };
-
-        UserService userService = new UserService(mockDao);
+        // Подключаем реальную реализацию DAO вместо заглушки
+        UserDao userDao = new UserDaoImpl();
+        UserService userService = new UserService(userDao);
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -50,6 +43,7 @@ public class Main {
                     System.out.println(user != null ? user : "Пользователь не найден.");
                     break;
                 case 3:
+                    // Исправленный синтаксис вывода списка
                     userService.getAllUsers().forEach(System.out::println);
                     break;
                 case 4:
@@ -70,6 +64,8 @@ public class Main {
                     userService.deleteUser(deleteId);
                     break;
                 case 6:
+                    System.out.println("Закрытие соединений с базой данных...");
+                    HibernateUtil.shutdown(); // Корректно закрываем фабрику сессий Hibernate
                     System.out.println("Выход из программы.");
                     return;
                 default:
