@@ -3,42 +3,42 @@ package io.github.ArtemV2007.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-// 1. Говорим Hibernate, что этот класс является сущностью БД
 @Entity
-// 2. Указываем имя таблицы в PostgreSQL
 @Table(name = "users")
 public class User {
 
-    // 3. Помечаем поле как первичный ключ (Primary Key)
     @Id
-    // 4. Настраиваем автогенерацию ID
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 5. Размечаем обычные колонки
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    // Email сделаем уникальным, чтобы нельзя было создать двух пользователей с одинаковой почтой
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "age")
     private Integer age;
 
-    // Настраиваем имя колонки
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // Пустой конструктор обязателен для Hibernate, чтобы он мог восстанавливать объекты из БД
+    // Пустой конструктор для Hibernate
     public User() {}
 
-    // Конструктор для удобного создания новых пользователей в коде
+    // Конструктор для создания новых пользователей в коде
     public User(String name, String email, Integer age) {
         this.name = name;
         this.email = email;
         this.age = age;
-        this.createdAt = LocalDateTime.now();
+    }
+
+    // Автоматическая установка даты перед сохранением в БД (если объект создан через пустой конструктор)
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
     }
 
     // Геттеры и сеттеры

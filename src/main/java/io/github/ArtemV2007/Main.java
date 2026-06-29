@@ -1,17 +1,29 @@
 package io.github.ArtemV2007;
 
-import io.github.ArtemV2007.dao.UserDao;
-import io.github.ArtemV2007.dao.UserDaoImpl;
 import io.github.ArtemV2007.model.User;
 import io.github.ArtemV2007.service.UserService;
-import io.github.ArtemV2007.util.HibernateUtil;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Scanner;
 
-public class Main {
+@SpringBootApplication
+public class Main implements CommandLineRunner {
+
+    // Spring сам внедрит сервис, когда мы его напишем
+    private final UserService userService;
+
+    public Main(UserService userService) {
+        this.userService = userService;
+    }
+
     public static void main(String[] args) {
-        UserDao userDao = new UserDaoImpl();
-        UserService userService = new UserService(userDao);
+        SpringApplication.run(Main.class, args);
+    }
+
+    @Override
+    public void run(String... args) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -39,10 +51,10 @@ public class Main {
                     String name = scanner.nextLine();
                     System.out.print("Введите email: ");
                     String email = scanner.nextLine();
-
                     System.out.print("Введите возраст: ");
                     int age = readIntSafe(scanner);
 
+                    // Передаем данные в сервис (в будущем адаптируем под DTO, если нужно)
                     userService.createUser(name, email, age);
                     System.out.println("Запрос на создание пользователя отправлен.");
                     break;
@@ -50,7 +62,8 @@ public class Main {
                 case 2:
                     System.out.print("Введите ID: ");
                     long id = readLongSafe(scanner);
-                    User user = userService.getUserById(id);
+                    // Сервис теперь будет возвращать DTO, поэтому тип переменной временно опустим или поменяем позже
+                    Object user = userService.getUserById(id);
                     System.out.println(user != null ? user : "Пользователь не найден.");
                     break;
 
@@ -79,9 +92,8 @@ public class Main {
                     break;
 
                 case 6:
-                    System.out.println("Закрытие соединений с базой данных...");
-                    HibernateUtil.shutdown();
                     System.out.println("Выход из программы.");
+                    // Закрытие контекста Spring произойдет автоматически при выходе из метода run
                     return;
 
                 default:
@@ -90,7 +102,6 @@ public class Main {
         }
     }
 
-    // Вспомогательный метод для безопасного чтения Integer
     private static int readIntSafe(Scanner scanner) {
         while (true) {
             try {
@@ -101,7 +112,6 @@ public class Main {
         }
     }
 
-    // Вспомогательный метод для безопасного чтения Long
     private static long readLongSafe(Scanner scanner) {
         while (true) {
             try {
